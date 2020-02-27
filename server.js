@@ -27,7 +27,13 @@ function getPatchVersion(url) {
     httpDataExtraction(url, (body) => {
       let result = JSON.parse(body);
       //console.log(result.type);
-      //console.log(Object.keys(result.data).length);
+      console.log(Object.keys(result.data).length);
+      for (var k in result.data){
+        if (Object.keys(result.data[k].stats).length != 0){
+          console.log("Item name: ", result.data[k].name, " stats: ", result.data[k].stats);
+        }
+        //console.log("Item name:result.data[k].stats);
+      }
     });
   });
 }
