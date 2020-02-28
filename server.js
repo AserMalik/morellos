@@ -1,4 +1,19 @@
 var https = require('https')
+const { Client } = require('pg');
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true,
+});
+
+client.query('SELECT * FROM patchVersions;', (err, res) => {
+  if (err) throw err;
+  for (let row of res.rows) {
+    console.log(row);
+  }
+  client.end();
+});
+
 var url = 'https://ddragon.leagueoflegends.com/api/versions.json';
 
 function httpDataExtraction(url, callback) {
@@ -31,32 +46,15 @@ function getItemsData(url) {
   httpDataExtraction(url, (body) => {
     let result = JSON.parse(body);
     console.log(Object.keys(result.data).length);
-    for (var k in result.data){
+    /*for (var k in result.data){
       if (Object.keys(result.data[k].stats).length != 0){
         console.log("Item name: ", result.data[k].name, " stats: ", result.data[k].stats);
       }
-    }
+    }*/
   });
 }
 
 getPatchVersion(url); //this currently runs the whole update process in waterfall fashion
-
-const { Client } = require('pg');
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true,
-});
-
-client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
-  if (err) throw err;
-  for (let row of res.rows) {
-    console.log(JSON.stringify(row));
-  }
-  client.end();
-});
-
-
 
 /*function TSM(){
   for (var i = 0; i < 5; i++){
