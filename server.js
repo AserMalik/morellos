@@ -30,15 +30,20 @@ async function inDevTestAPI () {
   /*end of CRON cycle*/
 }
 
-app.use(express.static(path.join(__dirname, '/client/public')));
+//app.use(express.static(path.join(__dirname, '/client/pages')));
 
-app.get('/ping', (req, res) => {
+app.use(function (req, res, next) {
+  console.log('Time:', Date.now())
+  next()
+})
+
+app.get('/api/ping', (req, res) => {
   inDevTestAPI().then((body) => {
     return res.send(body);
   });
 })
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
   return res.sendFile(path.join(__dirname+'/client/public/index.html'));
 })
 
