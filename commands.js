@@ -50,10 +50,9 @@ function filterItemsObject (itemsObject) {
   let i = 0;
   for (var k in itemsObject.data){
     if (Object.keys(itemsObject.data[k].stats).length == 1){  //1 stat allow only for debug purposes
-      filteredItemsObject[i] = new Array(3);
-      filteredItemsObject[i][0] = i                         //local id
-      filteredItemsObject[i][1] = itemsObject.data[k].name  //item name
-      filteredItemsObject[i][2] = itemsObject.data[k].stats //item stats
+      filteredItemsObject[i] = new Array(2);
+      filteredItemsObject[i][0] = itemsObject.data[k].name  //item name
+      filteredItemsObject[i][1] = itemsObject.data[k].stats //item stats
       //console.log("names here: " + filteredItemsObject[i][0] + " and stats here: " + filteredItemsObject[i][1]);
       i++;
     }
