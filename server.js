@@ -1,75 +1,49 @@
-var https = require('https')
-const { Client } = require('pg');
+const API = require('./commands.js')
+const express = require('express')
+const path = require('path')
+const app = express()
+const cors = require('cors')
+const port = process.env.PORT || 8080
 
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true,
-});
-
-client.query('SELECT * FROM patchVersions;', (err, res) => {
-  if (err) throw err;
-  for (let row of res.rows) {
-    console.log(row);
-  }
-  client.end();
-});
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
 
 var url = 'https://ddragon.leagueoflegends.com/api/versions.json';
 
-function httpDataExtraction(url, callback) {
-  var body = '';
-  https.get(url, function(response) {
-    response.on('data', (chunk) => { body += chunk; });
-    response.on('end', () => {
-      try {
-        callback(body);
-      } catch (error) {
-        console.error(error.message);
-      }
-    }).on('error', (error) => {
-      console.error(`Got error: ${error.message}`);
-    });
+async function inDevTestAPI () {
+  /*retrieves current patch from DataDragon*/
+  let patch = await API.getPatchVersion(url);
+  /*retrieve stored patch version in cache/db here*/
+
+  /*compare stored to actual patch version here*/
+
+  /*if new patch, build new url*/
+  let patchURL = API.getNewPatchURL(patch, 'item')
+  /*retrieve new patch item list from DataDragon, as a JSON object*/
+  let itemsObject = await API.getItemsObject(patchURL);
+  /*perform JSON data operations*/
+  let filteredItemsObject = API.filterItemsObject(itemsObject);
+  return filteredItemsObject;
+  /*send to cache here*/
+
+  /*end of CRON cycle*/
+}
+
+app.use(express.static(path.join(__dirname, '/client/public')));
+
+app.get('/ping', (req, res) => {
+  inDevTestAPI().then((body) => {
+    return res.send(body);
   });
-}
+})
 
-function getPatchVersion(url) {
-  var currentVersion;
-  httpDataExtraction(url, (body) => {
-    let result= JSON.parse(body);
-    currentVersion = result[0];
-    url = 'https://ddragon.leagueoflegends.com/cdn/' + currentVersion + '/data/en_US/item.json';
-    getItemsData(url);
-  });
-}
+app.get('/', (req, res) => {
+  return res.sendFile(path.join(__dirname+'/client/public/index.html'));
+})
 
-function getItemsData(url) {
-  httpDataExtraction(url, (body) => {
-    let result = JSON.parse(body);
-    console.log(Object.keys(result.data).length);
-    /*for (var k in result.data){
-      if (Object.keys(result.data[k].stats).length != 0){
-        console.log("Item name: ", result.data[k].name, " stats: ", result.data[k].stats);
-      }
-    }*/
-  });
-}
-
-getPatchVersion(url); //this currently runs the whole update process in waterfall fashion
-
-/*function TSM(){
-  for (var i = 0; i < 5; i++){
-    console.log(i + " TSM");
-  }
-}
-function LCS(){
-  for (var i = 0; i < 10; i++){
-    setTimeout(TSM, 63);
-  }
-}
-
-LCS();*/
-
-
-
+app.listen(port, (req, res) => {  
+  console.log( `server listening on port: ${port}`);
+})
 
 
