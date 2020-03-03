@@ -32,7 +32,7 @@ async function inDevTestAPI () {
 
 //app.use(express.static(path.join(__dirname, '/client/pages')));
 
-app.get('/api/ping', (req, res) => {
+app.get('/ping', (req, res) => {
   inDevTestAPI().then((body) => {
     return res.send(body);
   });
