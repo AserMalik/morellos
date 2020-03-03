@@ -32,11 +32,6 @@ async function inDevTestAPI () {
 
 //app.use(express.static(path.join(__dirname, '/client/pages')));
 
-app.use(function (req, res, next) {
-  console.log('Time:', Date.now())
-  next()
-})
-
 app.get('/api/ping', (req, res) => {
   inDevTestAPI().then((body) => {
     return res.send(body);
@@ -44,7 +39,8 @@ app.get('/api/ping', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-  return res.sendFile(path.join(__dirname+'/client/public/index.html'));
+  //return res.sendFile(path.join(__dirname+'/client/public/index.html'));
+  return res.send("Sir, this is a morellos.");
 })
 
 app.listen(port, (req, res) => {  
