@@ -7,7 +7,7 @@ const port = process.env.PORT || 8080
 
 app.use(cors({
   //origin: 'http://localhost:3000'
-  origin: 'https://happy-rosalind-0d92ae.netlify.app/'
+  origin: 'https://happy-rosalind-0d92ae.netlify.app'
 }));
 
 var url = 'https://ddragon.leagueoflegends.com/api/versions.json';
